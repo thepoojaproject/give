@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+
+<style>
+:root{
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --display:#f7f9fc;
+  --text:#182230;
+  --muted:#718096;
+  --key:#f0f3f7;
+  --key-hover:#e4e9f0;
+  --op:#e8eefb;
+  --accent:#2563eb;
+  --accent-hover:#1d4ed8;
+  --danger:#feecec;
+  --danger-text:#c53030;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:linear-gradient(135deg,#edf2f7,#dfe7f1);
+  color:var(--text);
+}
+
+/* =========================
+   CALCULATOR
+========================= */
+
+#calculatorPage{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+
+.calculator{
+  width:min(390px,94vw);
+  padding:18px;
+  border-radius:28px;
+  background:var(--card);
+  box-shadow:0 24px 60px rgba(30,45,65,.16);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:2px 4px 14px;
+}
+
+.brand h1{
+  font-size:17px;
+  margin:0;
+  font-weight:750;
+}
+
+.brand span{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.display{
+  min-height:122px;
+  padding:18px 16px;
+  border-radius:20px;
+  background:var(--display);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:flex-end;
+  overflow:hidden;
+  margin-bottom:16px;
+}
+
+.expression{
+  width:100%;
+  text-align:right;
+  color:var(--muted);
+  font-size:15px;
+  min-height:23px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.result{
+  width:100%;
+  text-align:right;
+  font-size:38px;
+  font-weight:750;
+  line-height:1.15;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.keys{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+button{
+  border:0;
+  height:64px;
+  border-radius:17px;
+  font-size:19px;
+  font-weight:650;
+  color:var(--text);
+  background:var(--key);
+  cursor:pointer;
+  transition:.12s transform,.12s background;
+  user-select:none;
+}
+
+button:hover{
+  background:var(--key-hover);
+}
+
+button:active{
+  transform:scale(.95);
+}
+
+button.operator{
+  background:var(--op);
+  color:#2451a6;
+}
+
+button.equals{
+  background:var(--accent);
+  color:white;
+  box-shadow:0 8px 18px rgba(37,99,235,.25);
+}
+
+button.equals:hover{
+  background:var(--accent-hover);
+}
+
+button.clear{
+  background:var(--danger);
+  color:var(--danger-text);
+}
+
+button.zero{
+  grid-column:span 2;
+}
+
+.footer{
+  text-align:center;
+  margin:15px 0 1px;
+  color:#98a2b3;
+  font-size:10px;
+  font-weight:600;
+}
+
+
+/* =========================
+   GALLERY PAGE
+========================= */
+
+#galleryPage{
+  display:none;
+  min-height:100vh;
+  padding:24px;
+}
+
+.gallery-container{
+  max-width:1100px;
+  margin:auto;
+}
+
+.gallery-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:28px;
+}
+
+.gallery-title h1{
+  margin:0;
+  font-size:32px;
+  letter-spacing:-1px;
+}
+
+.gallery-title p{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.back-btn{
+  height:46px;
+  padding:0 18px;
+  border-radius:14px;
+  background:#ffffff;
+  color:var(--text);
+  box-shadow:0 8px 25px rgba(30,45,65,.10);
+  font-size:14px;
+}
+
+.back-btn:hover{
+  background:#f7f9fc;
+}
+
+.gallery-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+  gap:15px;
+}
+
+.gallery-count{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.upload-label{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:44px;
+  padding:0 17px;
+  border-radius:13px;
+  background:var(--accent);
+  color:white;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(37,99,235,.20);
+}
+
+.upload-label:hover{
+  background:var(--accent-hover);
+}
+
+#fileInput{
+  display:none;
+}
+
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:18px;
+}
+
+.gallery-card{
+  background:#fff;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 12px 30px rgba(30,45,65,.10);
+  transition:.2s transform,.2s box-shadow;
+}
+
+.gallery-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 35px rgba(30,45,65,.15);
+}
+
+.gallery-image{
+  width:100%;
+  aspect-ratio:4/3;
+  object-fit:cover;
+  display:block;
+  background:#f1f4f8;
+}
+
+.gallery-info{
+  padding:14px;
+}
+
+.gallery-info h3{
+  margin:0;
+  font-size:14px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.gallery-info p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.empty-gallery{
+  grid-column:1/-1;
+  text-align:center;
+  padding:70px 20px;
+  background:white;
+  border-radius:22px;
+  box-shadow:0 12px 30px rgba(30,45,65,.08);
+}
+
+.empty-icon{
+  font-size:45px;
+  margin-bottom:12px;
+}
+
+.empty-gallery h2{
+  margin:0;
+  font-size:20px;
+}
+
+.empty-gallery p{
+  color:var(--muted);
+  font-size:13px;
+}
+
+
+/* =========================
+   IMAGE VIEWER
+========================= */
+
+#imageViewer{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(10,15,25,.88);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:25px;
+}
+
+.viewer-image{
+  max-width:95vw;
+  max-height:90vh;
+  object-fit:contain;
+  border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+
+.close-viewer{
+  position:absolute;
+  top:20px;
+  right:20px;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:white;
+  color:#111;
+  font-size:22px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:600px){
+
+  #galleryPage{
+    padding:17px;
+  }
+
+  .gallery-header{
+    align-items:flex-start;
+  }
+
+  .gallery-title h1{
+    font-size:26px;
+  }
+
+  .gallery-header{
+    flex-direction:column;
+  }
+
+  .back-btn{
+    width:100%;
+  }
+
+  .gallery-toolbar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .upload-label{
+    width:100%;
+  }
+
+  .gallery-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .gallery-card{
+    border-radius:15px;
+  }
+
+  .gallery-info{
+    padding:10px;
+  }
+
+  .gallery-info h3{
+    font-size:12px;
+  }
+
+  .gallery-info p{
+    font-size:9px;
+  }
+}
+
+@media(max-width:360px){
+  button{
+    height:58px;
+  }
+
+  .display{
+    min-height:110px;
+  }
+
+  .result{
+    font-size:33px;
+  }
+
+  .gallery-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     CALCULATOR PAGE
+===================================================== -->
+
+<section id="calculatorPage">
+
+  <main class="calculator">
+
+    <div class="brand">
+      <h1>Calculator</h1>
+      <span>STANDARD</span>
+    </div>
+
+    <section class="display">
+      <div class="expression" id="expression"></div>
+      <div class="result" id="result">0</div>
+    </section>
+
+    <section class="keys">
+
+      <button class="clear" data-action="clear">AC</button>
+      <button data-action="backspace">⌫</button>
+      <button class="operator" data-value="%">%</button>
+      <button class="operator" data-value="÷">÷</button>
+
+      <button data-value="7">7</button>
+      <button data-value="8">8</button>
+      <button data-value="9">9</button>
+      <button class="operator" data-value="×">×</button>
+
+      <button data-value="4">4</button>
+      <button data-value="5">5</button>
+      <button data-value="6">6</button>
+      <button class="operator" data-value="−">−</button>
+
+      <button data-value="1">1</button>
+      <button data-value="2">2</button>
+      <button data-value="3">3</button>
+      <button class="operator" data-value="+">+</button>
+
+      <button class="zero" data-value="0">0</button>
+      <button data-value=".">.</button>
+      <button class="equals" data-action="equals">=</button>
+
+    </section>
+
+    <div class="footer">
+      Made in ❤ for Neelam
+    </div>
+
+  </main>
+
+</section>
+
+
+<!-- =====================================================
+     GALLERY PAGE
+===================================================== -->
+
+<section id="galleryPage">
+
+  <div class="gallery-container">
+
+    <header class="gallery-header">
+
+      <div class="gallery-title">
+        <h1>My Gallery</h1>
+        <p>Your private photo collection</p>
+      </div>
+
+      <button class="back-btn" onclick="showCalculator()">
+        ← Back to Calculator
+      </button>
+
+    </header>
+
+
+    <div class="gallery-toolbar">
+
+      <div class="gallery-count" id="galleryCount">
+        0 Photos
+      </div>
+
+      <label class="upload-label">
+        + Add Photos
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          multiple
+        >
+      </label>
+
+    </div>
+
+
+    <div class="gallery-grid" id="galleryGrid">
+
+      <div class="empty-gallery" id="emptyGallery">
+
+        <div class="empty-icon">
+          🖼️
+        </div>
+
+        <h2>Your Gallery is Empty</h2>
+
+        <p>
+          Add photos to start building your gallery.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     IMAGE VIEWER
+===================================================== -->
+
+<div id="imageViewer">
+
+  <button
+    class="close-viewer"
+    onclick="closeViewer()"
+  >
+    ×
+  </button>
+
+  <img
+    id="viewerImage"
+    class="viewer-image"
+    src=""
+    alt="Preview"
+  >
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   PAGE NAVIGATION
+===================================================== */
+
+const calculatorPage =
+  document.getElementById("calculatorPage");
+
+const galleryPage =
+  document.getElementById("galleryPage");
+
+function showGallery(){
+
+  calculatorPage.style.display = "none";
+
+  galleryPage.style.display = "block";
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+function showCalculator(){
+
+  galleryPage.style.display = "none";
+
+  calculatorPage.style.display = "grid";
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =====================================================
+   CALCULATOR
+===================================================== */
+
+const result =
+  document.getElementById("result");
+
+const expression =
+  document.getElementById("expression");
+
+let current = "0";
+let previous = null;
+let operator = null;
+let waiting = false;
+
+
+/* SECRET CODE */
+
+const SECRET_CODE = "04082002";
+
+let enteredDigits = "";
+
+
+/* FORMAT NUMBER */
+
+function formatNumber(number){
+
+  if(!Number.isFinite(number)){
+    return "Error";
+  }
+
+  const rounded =
+    Math.abs(number) < 1e-12
+      ? 0
+      : Number(number.toPrecision(12));
+
+  return String(rounded);
+
+}
+
+
+/* UPDATE DISPLAY */
+
+function updateDisplay(){
+
+  result.textContent = current;
+
+  if(previous !== null && operator){
+
+    expression.textContent =
+      `${previous} ${operator}`;
+
+  }else{
+
+    expression.textContent = "";
+
+  }
+
+}
+
+
+/* DIGIT */
+
+function inputDigit(digit){
+
+  /* SECRET CODE TRACKING */
+
+  enteredDigits += digit;
+
+  if(enteredDigits.length > SECRET_CODE.length){
+
+    enteredDigits =
+      enteredDigits.slice(-SECRET_CODE.length);
+
+  }
+
+
+  /* SECRET CODE MATCH */
+
+  if(enteredDigits === SECRET_CODE){
+
+    enteredDigits = "";
+
+    current = "0";
+    previous = null;
+    operator = null;
+    waiting = false;
+
+    updateDisplay();
+
+    setTimeout(() => {
+
+      showGallery();
+
+    },150);
+
+    return;
+  }
+
+
+  /* NORMAL CALCULATOR */
+
+  if(current === "Error" || waiting){
+
+    current = digit;
+
+    waiting = false;
+
+  }else{
+
+    current =
+      current === "0"
+        ? digit
+        : current + digit;
+
+  }
+
+  updateDisplay();
+
+}
+
+
+/* DECIMAL */
+
+function inputDecimal(){
+
+  if(current === "Error" || waiting){
+
+    current = "0.";
+
+    waiting = false;
+
+  }else if(!current.includes(".")){
+
+    current += ".";
+
+  }
+
+  updateDisplay();
+
+}
+
+
+/* CALCULATE */
+
+function calculate(a,b,op){
+
+  a = Number(a);
+  b = Number(b);
+
+  if(op === "+"){
+    return a + b;
+  }
+
+  if(op === "−"){
+    return a - b;
+  }
+
+  if(op === "×"){
+    return a * b;
+  }
+
+  if(op === "÷"){
+
+    return b === 0
+      ? Infinity
+      : a / b;
+
+  }
+
+  return b / 100 * a;
+
+}
+
+
+/* OPERATOR */
+
+function chooseOperator(op){
+
+  if(current === "Error"){
+    return;
+  }
+
+  if(op === "%"){
+
+    current =
+      formatNumber(Number(current) / 100);
+
+    updateDisplay();
+
+    return;
+
+  }
+
+
+  if(
+    previous !== null &&
+    operator &&
+    !waiting
+  ){
+
+    current =
+      formatNumber(
+        calculate(
+          previous,
+          current,
+          operator
+        )
+      );
+
+  }
+
+
+  previous = current;
+
+  operator = op;
+
+  waiting = true;
+
+  updateDisplay();
+
+}
+
+
+/* EQUALS */
+
+function equals(){
+
+  if(
+    previous === null ||
+    !operator ||
+    current === "Error"
+  ){
+
+    return;
+
+  }
+
+  const left = previous;
+
+  const op = operator;
+
+  const right = current;
+
+  current =
+    formatNumber(
+      calculate(
+        left,
+        right,
+        op
+      )
+    );
+
+  expression.textContent =
+    `${left} ${op} ${right} =`;
+
+  previous = null;
+
+  operator = null;
+
+  waiting = false;
+
+  result.textContent = current;
+
+}
+
+
+/* CLEAR */
+
+function clearAll(){
+
+  current = "0";
+
+  previous = null;
+
+  operator = null;
+
+  waiting = false;
+
+  enteredDigits = "";
+
+  updateDisplay();
+
+}
+
+
+/* BACKSPACE */
+
+function backspace(){
+
+  if(
+    waiting ||
+    current === "Error"
+  ){
+
+    return;
+
+  }
+
+  current =
+    current.length > 1
+      ? current.slice(0,-1)
+      : "0";
+
+  enteredDigits = "";
+
+  updateDisplay();
+
+}
+
+
+/* BUTTON EVENTS */
+
+document
+  .querySelector(".keys")
+  .addEventListener("click",function(event){
+
+    const button =
+      event.target.closest("button");
+
+    if(!button){
+      return;
+    }
+
+    const action =
+      button.dataset.action;
+
+    const value =
+      button.dataset.value;
+
+
+    if(action === "clear"){
+
+      clearAll();
+
+    }
+
+    else if(action === "backspace"){
+
+      backspace();
+
+    }
+
+    else if(action === "equals"){
+
+      equals();
+
+    }
+
+    else if(value === "."){
+
+      inputDecimal();
+
+    }
+
+    else if(/^[0-9]$/.test(value)){
+
+      inputDigit(value);
+
+    }
+
+    else{
+
+      chooseOperator(value);
+
+    }
+
+  });
+
+
+/* KEYBOARD */
+
+document.addEventListener(
+  "keydown",
+  function(event){
+
+    const key = event.key;
+
+
+    if(/^[0-9]$/.test(key)){
+
+      inputDigit(key);
+
+    }
+
+    else if(key === "."){
+
+      inputDecimal();
+
+    }
+
+    else if(key === "+"){
+
+      chooseOperator("+");
+
+    }
+
+    else if(key === "-"){
+
+      chooseOperator("−");
+
+    }
+
+    else if(key === "*"){
+
+      chooseOperator("×");
+
+    }
+
+    else if(key === "/"){
+
+      event.preventDefault();
+
+      chooseOperator("÷");
+
+    }
+
+    else if(key === "%"){
+
+      chooseOperator("%");
+
+    }
+
+    else if(
+      key === "Enter" ||
+      key === "="
+    ){
+
+      equals();
+
+    }
+
+    else if(key === "Escape"){
+
+      clearAll();
+
+    }
+
+    else if(key === "Backspace"){
+
+      backspace();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   GALLERY SYSTEM
+===================================================== */
+
+const fileInput =
+  document.getElementById("fileInput");
+
+const galleryGrid =
+  document.getElementById("galleryGrid");
+
+const galleryCount =
+  document.getElementById("galleryCount");
+
+const emptyGallery =
+  document.getElementById("emptyGallery");
+
+
+/*
+  Photos are saved in localStorage as
+  base64 image data.
+
+  This means they remain available
+  after refreshing the page.
+*/
+
+let photos =
+  JSON.parse(
+    localStorage.getItem("calculatorGallery")
+    || "[]"
+  );
+
+
+/* SAVE */
+
+function savePhotos(){
+
+  localStorage.setItem(
+    "calculatorGallery",
+    JSON.stringify(photos)
+  );
+
+}
+
+
+/* RENDER */
+
+function renderGallery(){
+
+  galleryGrid.innerHTML = "";
+
+
+  if(photos.length === 0){
+
+    galleryGrid.appendChild(
+      createEmptyGallery()
+    );
+
+  }else{
+
+    photos.forEach(
+      (photo,index) => {
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "gallery-card";
+
+
+        card.innerHTML = `
+
+          <img
+            class="gallery-image"
+            src="${photo.data}"
+            alt="${escapeHTML(photo.name)}"
+            loading="lazy"
+            onclick="openViewer('${photo.data}')"
+          >
+
+          <div class="gallery-info">
+
+            <h3>
+              ${escapeHTML(photo.name)}
+            </h3>
+
+            <p>
+              Photo ${index + 1}
+            </p>
+
+          </div>
+
+        `;
+
+
+        galleryGrid.appendChild(card);
+
+      }
+    );
+
+  }
+
+
+  galleryCount.textContent =
+    `${photos.length} ${
+      photos.length === 1
+        ? "Photo"
+        : "Photos"
+    }`;
+
+}
+
+
+/* EMPTY */
+
+function createEmptyGallery(){
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "empty-gallery";
+
+  div.innerHTML = `
+
+    <div class="empty-icon">
+      🖼️
+    </div>
+
+    <h2>Your Gallery is Empty</h2>
+
+    <p>
+      Add photos to start building your gallery.
+    </p>
+
+  `;
+
+  return div;
+
+}
+
+
+/* ESCAPE HTML */
+
+function escapeHTML(text){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+
+}
+
+
+/* UPLOAD PHOTOS */
+
+fileInput.addEventListener(
+  "change",
+  function(event){
+
+    const files =
+      Array.from(event.target.files);
+
+
+    files.forEach(file => {
+
+      if(!file.type.startsWith("image/")){
+        return;
+      }
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function(e){
+
+          photos.push({
+
+            name:file.name,
+
+            data:e.target.result
+
+          });
+
+
+          savePhotos();
+
+          renderGallery();
+
+        };
+
+
+      reader.readAsDataURL(file);
+
+    });
+
+
+    fileInput.value = "";
+
+  }
+);
+
+
+/* IMAGE VIEWER */
+
+function openViewer(src){
+
+  const viewer =
+    document.getElementById("imageViewer");
+
+  const image =
+    document.getElementById("viewerImage");
+
+  image.src = src;
+
+  viewer.style.display = "flex";
+
+}
+
+
+function closeViewer(){
+
+  const viewer =
+    document.getElementById("imageViewer");
+
+  viewer.style.display = "none";
+
+  document.getElementById(
+    "viewerImage"
+  ).src = "";
+
+}
+
+
+document
+  .getElementById("imageViewer")
+  .addEventListener(
+    "click",
+    function(event){
+
+      if(event.target === this){
+
+        closeViewer();
+
+      }
+
+    }
+  );
+
+
+/* INITIAL LOAD */
+
+renderGallery();
+
+</script>
+
+</body>
+</html>
